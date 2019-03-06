@@ -1,0 +1,120 @@
+/* title */
+span.logo{
+    font-size: 24px !important;
+    font-weight: bold !important;
+    background-color: #0f56af !important;
+}
+
+/* navbar */
+nav.navbar {
+    background: #1375ec !important;
+}
+
+/* sidebar */
+
+.sidebar ul {
+    margin-top: 20px
+}
+
+.sidebar a {
+    font-size: 18px;
+    padding-left: 40px;
+}
+
+.sidebar a:hover{
+    border-left: solid 4px #1375ec !important
+}
+
+.sidebar li.active a{
+    border-left: solid 4px #1375ec !important
+}
+
+.sidebar li {
+    height: 60px;
+}
+
+.sidebar span {
+    margin-left: 15px;
+}
+
+/* data-table enable scrollbar */
+.datatables{
+    overflow: auto;
+}
+table {
+  white-space: nowrap;
+}
+
+/* overview */
+#shiny-tab-tab_overview .tabbable .tab-content {
+    padding-top: 3rem;
+}
+
+.nav li.active a {
+    color: #FFFFFF;
+    background-color: #428ae2;
+}
+.nav li:not(.active) a {
+    color: #1375ec;
+}
+
+.invalid {
+  border: 1px solid red;
+  background-color: #ffc9aa
+}
+
+.file-input-container {
+  display: inline;
+}
+.file-input-container .form-group {
+  display: inline-block;
+  margin-bottom: 0px;
+}
+
+/* univariate */
+
+#univariate-formula-vars-trs td {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+#univariate-formula-vars-trs td .form-group {
+  margin-bottom: 0px;
+}
+
+#univariate-formula-vars-trs td .selectize-control {
+  margin-bottom: 0px
+}
+
+.d-inline-block{
+  display: inline-block;
+}
+
+.float-right {
+  float: right;
+}
+
+p.font-weight-bold {
+  font-weight: bold;
+}
+
+.btn-primary, .btn-primary:visited, .page-buttons .btn-info {
+  background-color: #1375ec;
+  border-color: #1375ec;
+}
+.btn-primary:hover, .page-buttons .btn-info:hover {
+  background-color: #1567ca;
+  border-color: #0e54a9;
+}
+
+.box.box-solid.box-primary {
+  border: solid 1px #1375ec;
+}
+
+.box.box-primary {
+    border-top-color: #1375ec;
+}
+
+.box.box-solid.box-primary>.box-header {
+    background: #1375ec;
+    background-color: #1375ec;
+}
