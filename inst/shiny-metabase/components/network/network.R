@@ -36,9 +36,16 @@ TabNetwork = R6Class(
                             #         selected = "Partial correlation",
                             #     )
                             # ),
+                            tags$div(
+                                class = "col",
+                                tags$h5(
+                                    class = "font-weight-bold",
+                                    "Partial correlation parameters"
+                                )
+                            ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3",
                                 numericInput(
                                     ns("lambda"), "lambda",
                                     min = 0, max = 1, value = 0.625, step = 0.1
@@ -46,7 +53,7 @@ TabNetwork = R6Class(
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3",
                                 numericInput(
                                     ns("iter"), "iter",
                                     min = 1, max = 100, value = 2, step = 1
@@ -54,7 +61,7 @@ TabNetwork = R6Class(
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3",
                                 numericInput(
                                     ns("coef"), "Coefficient cutoff",
                                     min = 0, max = 1, step = 0.01, value = 0.3
@@ -62,7 +69,7 @@ TabNetwork = R6Class(
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3",
                                 numericInput(
                                     ns("occur"), "Minimal occurance",
                                     min = 0, max = 100, step = 1, value = 4
@@ -70,12 +77,26 @@ TabNetwork = R6Class(
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col",
+                                actionButton(ns("submit"), "Submit", class="btn-primary")
+                            ),
+
+                            tags$hr(),
+                            tags$div(
+                                class = "col",
+                                tags$h5(
+                                    class = "font-weight-bold",
+                                    "Aesthetic parameters"
+                                )
+                            ),
+
+                            tags$div(
+                                class = "col-xs-6 col-md-3",
                                 uiOutput(ns("node-color-ui"))
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3",
                                 selectInput(
                                     ns("layout"), "Layout",
                                     choices = c(
@@ -88,7 +109,7 @@ TabNetwork = R6Class(
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3",
                                 numericInput(
                                     ns("edge-length-scale"), "Edge length scale",
                                     min = 30, max = 1000, value = 60, step = 1
@@ -96,7 +117,7 @@ TabNetwork = R6Class(
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3 ",
                                 numericInput(
                                     ns("edge-width-scale"), "Edge width scale",
                                     min = 1, max = 100, value = 20
@@ -104,14 +125,12 @@ TabNetwork = R6Class(
                             ),
 
                             tags$div(
-                                class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
+                                class = "col-xs-6 col-md-3",
                                 numericInput(
                                     ns("node-size"), "Node size",
                                     min = 1, max = 100, value = 20, step = 1
                                 )
-                            ),
-
-                            actionButton(ns("submit"), "Submit", class="btn-primary")
+                            )
                         )
                     ),
                     column(
@@ -138,6 +157,10 @@ TabNetwork = R6Class(
         #' @props data, reactive that returns the data
         server = function(input, output, session, props){
 
+            states = reactiveValues(
+                id = NULL
+            )
+
             observe({
 
                 output$`node-color-ui` = renderUI({
@@ -160,6 +183,7 @@ TabNetwork = R6Class(
                 colnames(spn_cor) = colnames(Data)
                 rownames(spn_cor) = colnames(Data)
                 id = apply(spn_cor, 2, function(x) {sum(!between(x, -input$coef, input$coef)) > input$occur})
+                states$id = id
                 mat = spn_cor[id, id]
                 mat[between(mat, -input$coef, input$coef)] = 0
                 mat[do.call(c, lapply(1:nrow(mat), function(x) (1:x) + nrow(mat) * (x-1)))] = 0
@@ -186,20 +210,58 @@ TabNetwork = R6Class(
                 #edges$value = edges$value * input$`edge-width` + 1
                 edges$id = with(edges, glue("{source}-{target}"))
 
-                session$sendCustomMessage("cy-data", list(
-                    nodes = nodes,
-                    edges = edges
-                ))
-
-                # parameters
+                # params
                 params = list(
                     layout = input$layout,
                     "node-size" = input$`node-size`,
                     "edge-width-scale" = input$`edge-width-scale`,
                     "edge-length-scale" = input$`edge-length-scale`
                 )
-                session$sendCustomMessage("cy-params", params)
 
+                session$sendCustomMessage("cyDataSubmited", list(
+                    nodes = nodes,
+                    edges = edges,
+                    params = params
+                ))
+            })
+
+            observeEvent(input$`node-color`, {
+                if(input$`node-color` != "null" & !is.null(states$id)){
+                    session$sendCustomMessage("cyNodeColorUpdate", list(
+                        color = props$data()$feature_data[states$id, input$`node-color`]
+                    ))
+                }
+            })
+
+            observeEvent(input$`edge-width-scale`, {
+                if(!is.null(states$id)){
+                    session$sendCustomMessage("cyEdgeWidthUpdate",list(
+                        "edge-width-scale" = input$`edge-width-scale`
+                    ))
+                }
+            })
+
+            observeEvent(input$`node-size`, {
+                if(!is.null(states$id)){
+                    session$sendCustomMessage("cyNodeSizeUpdate", list(
+                        "node-size" = input$`node-size`
+                    ))
+                }
+            })
+
+            observeEvent({
+                input$layout
+                input$`edge-length-scale`
+            }, {
+                if(!is.null(states$id)){
+                    messageData = list(
+                        "layout" = input$layout
+                    )
+                    if(input$layout == "cola-edge-weighted"){
+                        messageData$`edge-length-scale` = input$`edge-length-scale`
+                    }
+                    session$sendCustomMessage("cyLayoutTypeUpdate", messageData)
+                }
             })
 
         },

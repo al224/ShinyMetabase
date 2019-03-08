@@ -36,7 +36,7 @@ devtools::install_github("zhuchcn/ShinyMetabase")
 
 There are two entry points of this app. Users can either directly parse data to the launcher, or upload `.csv` files after the app is lunched. 
 
-### Parse data to launch
+### Parse data to launcher
 
 The data to be parsed to the launcher must inherits from the mSet class from the [Metabase](https://www.github.com/zhuchcn/Metabase) package.
 
