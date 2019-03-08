@@ -19,7 +19,13 @@ SideBar = R6Class(
                         "Multivariate", tabName = "tab_multivariate", icon = icon("cubes")
                     ),
                     menuItem(
-                        "Network", tabName = "tab_network", icon = icon("wifi")
+                        "Network", icon = icon("wifi"),
+                        menuSubItem(
+                            "Parameter Tuning", tabName = "tab_network_tuning"
+                        ),
+                        menuSubItem(
+                            "Network Visualization", tabName = "tab_network_visual"
+                        )
                     )
                 )
             )

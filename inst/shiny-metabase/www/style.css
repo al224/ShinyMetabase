@@ -12,14 +12,11 @@ nav.navbar {
 
 /* sidebar */
 
-.sidebar ul {
-    margin-top: 20px
-}
-
 .sidebar a {
     font-size: 18px;
     padding-left: 40px;
 }
+
 
 .sidebar a:hover{
     border-left: solid 4px #1375ec !important
@@ -29,13 +26,32 @@ nav.navbar {
     border-left: solid 4px #1375ec !important
 }
 
-.sidebar li {
-    height: 60px;
+
+section.sidebar > ul > li {
+    margin: 0.75rem 0
+}
+
+section.sidebar > ul > li:first-child {
+    margin-top: 2rem
+}
+
+.sidebar .treeview ul li{
+  padding-top: 2rem;
+  padding-left: 1rem
+}
+
+.sidebar .treeview ul li:first-child{
+  padding-top: 1.25rem
+}
+
+.sidebar .treeview ul li:last-child{
+  padding-bottom: 1.25rem
 }
 
 .sidebar span {
     margin-left: 15px;
 }
+
 
 /* data-table enable scrollbar */
 .datatables{

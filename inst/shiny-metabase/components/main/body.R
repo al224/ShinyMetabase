@@ -2,9 +2,8 @@ import::here(TabOverview, .from="../overview/overview.R")
 import::here(TabNormality, .from="../normality/normality.R")
 import::here(TabUnivariate, .from="../univariate/univariate.R")
 import::here(TabMultivariate, .from="../multivariate/multivariate.R")
-import::here(TabNetwork, .from="../network/network.R")
-
-source("../network/network.R", local = TRUE)
+import::here(NetworkTuning, .from="../network/NetworkTuning.R")
+import::here(NetworkVisual, .from="../network/NetworkVisual.R")
 
 Body = R6Class(
     "Body",
@@ -16,14 +15,16 @@ Body = R6Class(
         tabNormality = NULL,
         tabUnivariate = NULL,
         tabMultivariate = NULL,
-        tabNetwork = NULL,
+        tabNetworkTuning = NULL,
+        tabNetworkVisual = NULL,
 
         initialize = function(){
             self$tabOverview = TabOverview$new()
             self$tabNormality = TabNormality$new()
             self$tabUnivariate = TabUnivariate$new()
             self$tabMultivariate = TabMultivariate$new()
-            self$tabNetwork = TabNetwork$new()
+            self$tabNetworkTuning = NetworkTuning$new()
+            self$tabNetworkVisual = NetworkVisual$new()
         },
 
         ui = function(){
@@ -40,7 +41,8 @@ Body = R6Class(
                         tabItem( tabName = "tab_normality", self$tabNormality$ui()),
                         tabItem( tabName = "tab_univariate", self$tabUnivariate$ui() ),
                         tabItem( tabName = "tab_multivariate", self$tabMultivariate$ui() ),
-                        tabItem( tabName = "tab_network", self$tabNetwork$ui() )
+                        tabItem( tabName = "tab_network_tuning", self$tabNetworkTuning$ui() ),
+                        tabItem( tabName = "tab_network_visual", self$tabNetworkVisual$ui() )
                     )
                 )
             )
@@ -68,7 +70,8 @@ Body = R6Class(
                     self$tabMultivariate$call(props = reactiveValues(
                         data = norm_data$data, statsData = stats_data
                     ))
-                    self$tabNetwork$call(props = norm_data)
+                    self$tabNetworkTuning$call(props = norm_data)
+                    self$tabNetworkVisual$call(props = norm_data)
                 }
             })
         },

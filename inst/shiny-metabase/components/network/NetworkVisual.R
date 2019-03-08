@@ -1,5 +1,5 @@
-TabNetwork = R6Class(
-    "TabNetwork",
+NetworkVisual = R6Class(
+    "NetworkVisual",
     inherit = ShinyModule,
     public = list(
         # attributes
@@ -24,18 +24,6 @@ TabNetwork = R6Class(
                             title = tags$span(icon("wrench"), "Partial Correlation Settings"),
                             collapsible = TRUE,
 
-                            # tags$div(
-                            #     class = "col-xs-6 col-sm-4 col-md-3 col-lg-2",
-                            #     selectInput(
-                            #         ns("corr-method"), "Correlation method",
-                            #         choices = c(
-                            #             "Pearson's correlation",
-                            #             "Spearman's correlation",
-                            #             "Partial correlation"
-                            #         ),
-                            #         selected = "Partial correlation",
-                            #     )
-                            # ),
                             tags$div(
                                 class = "col",
                                 tags$h5(
@@ -72,7 +60,7 @@ TabNetwork = R6Class(
                                 class = "col-xs-6 col-md-3",
                                 numericInput(
                                     ns("occur"), "Minimal occurance",
-                                    min = 0, max = 100, step = 1, value = 4
+                                    min = 0, max = 100, step = 1, value = 1
                                 )
                             ),
 
@@ -176,53 +164,58 @@ TabNetwork = R6Class(
             })
 
             observeEvent(input$submit, {
+
                 # Partical correlation
                 Data = apply(t(props$data()$conc_table), 2, scale)
                 spn = space.joint(Data, input$lambda, iter = input$iter)
                 spn_cor = spn$ParCor
                 colnames(spn_cor) = colnames(Data)
                 rownames(spn_cor) = colnames(Data)
-                id = apply(spn_cor, 2, function(x) {sum(!between(x, -input$coef, input$coef)) > input$occur})
-                states$id = id
-                mat = spn_cor[id, id]
-                mat[between(mat, -input$coef, input$coef)] = 0
-                mat[do.call(c, lapply(1:nrow(mat), function(x) (1:x) + nrow(mat) * (x-1)))] = 0
-                # Node list
-                nodes = list(id = colnames(mat))
-                if(input$`node-color` != "null") {
-                    color = props$data()$feature_data[id, input$`node-color`]
-                    if(length(unique(color)) > 65 ){
-                        showNotification("The node color variable has too many levels")
-                    } else {
-                        nodes$color = color
-                    }
+                for(i in seq_len(nrow(spn_cor))){
+                    spn_cor[i,i] = 0
                 }
-                # edge list
-                edges = melt(mat) %>% filter(value != 0)
-                colnames(edges)[1:2] = c("source", "target")
-                edges$sign = ifelse(
-                    edges$value > 0, "positive",
-                    ifelse(edges$value < 0, "negative", "")
-                )
+                id = apply(spn_cor, 2, function(x) {sum(!between(x, -input$coef, input$coef)) > input$occur * 2})
+                if(sum(id) > 0){
+                    states$id = id
+                    mat = spn_cor[id, id]
+                    mat[between(mat, -input$coef, input$coef)] = 0
+                    # Node list
+                    nodes = list(id = colnames(mat))
+                    if(input$`node-color` != "null") {
+                        color = props$data()$feature_data[id, input$`node-color`]
+                        if(length(unique(color)) > 65 ){
+                            showNotification("The node color variable has too many levels")
+                        } else {
+                            nodes$color = color
+                        }
+                    }
+                    # edge list
+                    edges = melt(mat) %>% filter(value != 0)
+                    colnames(edges)[1:2] = c("source", "target")
+                    edges$sign = ifelse(
+                        edges$value > 0, "positive",
+                        ifelse(edges$value < 0, "negative", "")
+                    )
 
-                edges$value = abs(edges$value)
-                #edges$value = (edges$value - min(edges$value)) / (max(edges$value) - min(edges$value))
-                #edges$value = edges$value * input$`edge-width` + 1
-                edges$id = with(edges, glue("{source}-{target}"))
+                    edges$value = abs(edges$value)
+                    #edges$value = (edges$value - min(edges$value)) / (max(edges$value) - min(edges$value))
+                    #edges$value = edges$value * input$`edge-width` + 1
+                    edges$id = with(edges, glue("{source}-{target}"))
 
-                # params
-                params = list(
-                    layout = input$layout,
-                    "node-size" = input$`node-size`,
-                    "edge-width-scale" = input$`edge-width-scale`,
-                    "edge-length-scale" = input$`edge-length-scale`
-                )
+                    # params
+                    params = list(
+                        layout = input$layout,
+                        "node-size" = input$`node-size`,
+                        "edge-width-scale" = input$`edge-width-scale`,
+                        "edge-length-scale" = input$`edge-length-scale`
+                    )
 
-                session$sendCustomMessage("cyDataSubmited", list(
-                    nodes = nodes,
-                    edges = edges,
-                    params = params
-                ))
+                    session$sendCustomMessage("cyDataSubmited", list(
+                        nodes = nodes,
+                        edges = edges,
+                        params = params
+                    ))
+                }
             })
 
             observeEvent(input$`node-color`, {
