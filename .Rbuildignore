@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^node_modules/
+^.*\.json$
+^srcjs/
+^webpack.config.js$

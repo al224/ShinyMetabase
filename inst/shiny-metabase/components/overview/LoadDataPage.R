@@ -22,7 +22,7 @@ LoadDataPage = R6Class(
                         class = "col-sm-12",
                         box(
                             width = NULL,
-                            title = "Loaad Data",
+                            title = tags$span(icon("cloud-upload-alt"), "Load Data"),
                             solidHeader = TRUE,
                             status = "primary",
 
