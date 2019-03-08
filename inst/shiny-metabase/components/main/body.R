@@ -33,7 +33,6 @@ Body = R6Class(
                 tags$script(src="script.js"),
                 tags$script(src="cytoscape/bundle.js"),
                 shinyjs::useShinyjs(),
-                extendShinyjs(text = self$jscode),
 
                 fluidRow(
                     tabItems(
@@ -54,15 +53,23 @@ Body = R6Class(
 
             observe({
                 if(is.null(states$data())) {
-                    js$disableTab("tab_normality")
-                    js$disableTab("tab_univariate")
-                    js$disableTab("tab_multivariate")
-                    js$disableTab("tab_network")
+                    session$sendCustomMessage("dataNotLoaded", list(
+                        tabs = c(
+                            "tab_normality",
+                            "tab_univariate",
+                            "tab_multivariate",
+                            "tab_network"
+                        )
+                    ))
                 } else {
-                    js$enableTab("tab_normality")
-                    js$enableTab("tab_univariate")
-                    js$enableTab("tab_multivariate")
-                    js$enableTab("tab_network")
+                    session$sendCustomMessage("dataLoaded", list(
+                        tabs = c(
+                            "tab_normality",
+                            "tab_univariate",
+                            "tab_multivariate",
+                            "tab_network"
+                        )
+                    ))
 
                     norm_data = self$tabNormality$call(props = states)
                     stats_data = self$tabUnivariate$call(props = norm_data)
@@ -74,24 +81,7 @@ Body = R6Class(
                     self$tabNetworkVisual$call(props = norm_data)
                 }
             })
-        },
-
-        jscode = "
-            shinyjs.disableTab = function(name) {
-              var tab = $('a[data-value=' + name + ']');
-              tab.bind('click.tab', function(e) {
-                e.preventDefault();
-                return false;
-              });
-              tab.addClass('disabled');
-            }
-
-            shinyjs.enableTab = function(name) {
-              var tab = $('a[data-value=' + name + ']');
-              tab.unbind('click.tab');
-              tab.removeClass('disabled');
-            }
-        "
+        }
     )
 )
 
