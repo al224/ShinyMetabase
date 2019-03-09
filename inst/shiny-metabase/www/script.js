@@ -10,6 +10,21 @@ $(document).on('shiny:connected',function(){
             enableTab(tab)
         })
     })
+    Shiny.addCustomMessageHandler("fileInputInvalid", function(e){
+        console.log(e)
+        console.log("conc")
+        $(`#overview-load-${e.table}-input input[type='text']`)
+            .addClass('invalid')
+        $(`#overview-load-${e.table}-input .input-group`)
+            .addClass('invalid')
+    })
+
+    Shiny.addCustomMessageHandler("fileInputValid", function(e){
+        $(`#overview-load-${e.table}-input input[type='text']`)
+            .removeClass('invalid')
+        $(`#overview-load-${e.table}-input .input-group`)
+            .removeClass('invalid')
+    })
 })
 
 const disableTab = function(name){

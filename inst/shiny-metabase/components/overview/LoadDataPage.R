@@ -17,7 +17,6 @@ LoadDataPage = R6Class(
             tagList(
                 tags$section(
                     class = "col",
-                    extendShinyjs(text = self$jscode),
                     tags$div(
                         class = "col-sm-12",
                         box(
@@ -93,7 +92,10 @@ LoadDataPage = R6Class(
             observeEvent(input$conc,{
                 if(!grepl("csv$", input$conc$name)) {
                     showNotification("Must be a csv file", type="error")
-                    js$addInvalid("conc")
+                    session$sendCustomMessage("fileInputInvalid", list(
+                        table = "conc"
+                    ))
+                    #js$addInvalid("conc")
                 } else {
                     tryCatch({
                         conc_table = read.csv(
@@ -104,10 +106,14 @@ LoadDataPage = R6Class(
                             conc_table = t(conc_table)
                         }
                         states$conc_table = conc_table
-                        js$removeInvalid("conc")
+                        session$sendCustomMessage("fileInputValid", list(
+                            table = "conc"
+                        ))
                     }, error = function(e){
                         showNotification("Must be a csv file", type = "error")
-                        js$addInvalid("conc")
+                        session$sendCustomMessage("fileInputInvalid", list(
+                            table = "conc"
+                        ))
                     })
                 }
             })
@@ -115,16 +121,23 @@ LoadDataPage = R6Class(
             observeEvent(input$feat, {
                 if(!grepl("\\.csv$", input$feat$name)) {
                     showNotification("Must be a csv file", type = "error")
-                    js$addInvalid("feat")
+                    session$sendCustomMessage("fileInputInvalid", list(
+                        table = "feat"
+                    ))
+                    #js$addInvalid("feat")
                 } else {
                     tryCatch({
                         states$feature_data = read.csv(
                             input$feat$datapath, header = TRUE, row.names = 1
                         )
-                        js$removeInvalid("feat")
+                        session$sendCustomMessage("fileInputValid", list(
+                            table = "feat"
+                        ))
                     }, error = function(e){
                         showNotification("Must be a csv file", type="error")
-                        js$addInvalid("feat")
+                        session$sendCustomMessage("fileInputInvalid", list(
+                            table = "feat"
+                        ))
                     })
                 }
             })
@@ -132,16 +145,23 @@ LoadDataPage = R6Class(
             observeEvent(input$samp, {
                 if(!grepl("\\.csv$", input$samp$name)) {
                     showNotification("Must be a csv file", type = "error")
-                    js$addInvalid("samp")
+                    session$sendCustomMessage("fileInputInvalid", list(
+                        table = "samp"
+                    ))
+                    #js$addInvalid("samp")
                 } else {
                     tryCatch({
                         states$sample_table = read.csv(
                             input$samp$datapath, header = TRUE, row.names = 1
                         )
-                        js$removeInvalid("samp")
+                        session$sendCustomMessage("fileInputValid", list(
+                            table = "samp"
+                        ))
                     }, error = function(e){
                         showNotification("Must be a csv file", type = "error")
-                        js$addInvalid("samp")
+                        session$sendCustomMessage("fileInputInvalid", list(
+                            table = "samp"
+                        ))
                     })
                 }
             })
@@ -204,22 +224,6 @@ LoadDataPage = R6Class(
             })
 
             return(emit)
-        },
-
-        jscode = "
-            shinyjs.addInvalid = function(name){
-                $(`#overview-load-${name}-input input[type='text']`)
-                    .addClass('invalid')
-                $(`#overview-load-${name}-input .input-group`)
-                    .addClass('invalid')
-            }
-
-            shinyjs.removeInvalid = function(name){
-                $(`#overview-load-${name}-input input[type='text']`)
-                    .removeClass('invalid')
-                $(`#overview-load-${name}-input .input-group`)
-                    .removeClass('invalid')
-            }
-        "
+        }
     )
 )
