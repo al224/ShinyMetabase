@@ -10,6 +10,8 @@ for(pkg in pkgs) {
     )
 }
 
+#.GlobalEnv$data = Metabase::lipid
+
 `%!in%` = function(x, y){
     !(`%in%`(x, y))
 }

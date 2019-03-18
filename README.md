@@ -1,10 +1,10 @@
 ## ShinyMetabase
 
-Ths R package is a wrap up of a shiny app for Metabolomics data analysis. This app was built on top of the [Metabase](https://www.github.com/zhuchcn/Metabase) package, with a GUI interface provided by the [shiny](https://shiny.rstudio.com/) framework. It provides some fundamental types of analysis, including univariate analysis (linear model), principle component analysis (PCA), clustered heatmap, and partial correlation network analysis.
+This R package is a wrap up of a shiny app for Metabolomics data analysis. This app was built on top of the [Metabase](https://www.github.com/zhuchcn/Metabase) package, with a GUI interface provided by the [shiny](https://shiny.rstudio.com/) framework. It provides some fundamental types of analysis, including univariate analysis (linear model), principle component analysis (PCA), clustered heatmap, and partial correlation network analysis.
 
 ## Installation
 
-There are quite a few packages that ShinyMetabase depends on. Please meke sure all dependency packages were installed in your R enviroment. Using the command provided below to find out which packages are not installed.
+There are quite a few packages that ShinyMetabase depends on. Please make sure all dependency packages were installed in your R environment. Using the command provided below to find out which packages are not installed.
 
 ```
 pkgs = c(
@@ -19,14 +19,15 @@ for(pkg in pkgs){
 }
 ```
 
-All packages can be installed from [CRAN](https://cran.r-project.org/) using the `install.packages()` function, except the **Metabase** and **ggmetaplots** must be installed from github:
+All packages can be installed from [CRAN](https://cran.r-project.org/) using the `install.packages()` function, except the **Metabase**, **ggmetaplots** and **shinyPagerUI** must be installed from github:
 
 ```
 devtools::install_github("zhuchcn/Metabase")
 devtools::install_github("zhuchcn/ggmetaplots")
+devtools::install_github('wleepang/shiny-pager-ui')
 ```
 
-When all dependecy packages are installed, the package can be installed from github.
+When all dependency packages are installed, the package can be installed from github.
 
 ```
 devtools::install_github("zhuchcn/ShinyMetabase")
